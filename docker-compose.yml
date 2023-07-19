@@ -11,5 +11,19 @@ services:
       - 9000:9000
       - 9001:9001
 
+  db: 
+    image: postgres
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=docker
+      - POSTGRES_DB=docker
+    ports:
+      - '5432:5432'
+    volumes: 
+      - pgdata:/var/lib/postgresql/data      
+
 volumes:
   minio_data:
+  pgdata:
+    driver: local

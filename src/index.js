@@ -26,9 +26,13 @@ console.time('stream-to-bucket')
 await serializeAsync()
 
 const dbKnex = knex({
-  client: 'sqlite3',
+  client: 'pg',
   connection: {
-    filename: "./data/db"
+    host: 'localhost',
+    port: '5432',
+    user: 'postgres',
+    database: 'docker',
+    password: 'docker',
   }
 });
 
@@ -39,6 +43,17 @@ var minioClient = new Minio.Client({
   accessKey: 'minioadmin',
   secretKey: 'minioadmin',
 });
+
+try {
+    const bucketExists = await minioClient.bucketExists('james');
+  
+    if (!bucketExists){
+      await minioClient.makeBucket('james', 'us-east-1');
+    }    
+  } catch (error) {
+    throw new Error(error.message);
+  
+  }
 
 async function* selectAsStream() {
   const defaultLimit = 100;
@@ -69,14 +84,14 @@ async function* transformData(chunk){
   for await (const stream of chunk){
     processed++;
     console.log(stream.toString());
-    yield Buffer.from(JSON.stringify(stream).concat("\n"));
+    yield stream;//Buffer.from(JSON.stringify(stream).concat("\n"));
   }
 }
 
 async function uploadFromStream(chunk) {
 
   //for await (const chunk of stream){
-    return minioClient.putObject('james',  'output', chunk.toString(), {'Content-Type': 'application/csv'});
+    return minioClient.putObject('james',  'output', chunk, {'Content-Type': 'application/csv'});
   //}  
 }
 const streamMarco = selectAsStream();

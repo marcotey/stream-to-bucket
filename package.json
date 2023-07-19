@@ -7,7 +7,7 @@
   "scripts": {
     "start": "node src/index.js",
     "dev": "node --watch src/index.js",
-    "seed": "node src/seed.js",
+    "seed": "node src/seed-pg.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -19,6 +19,7 @@
     "knex": "^2.5.1",
     "minio": "^7.1.1",
     "pg": "^8.11.1",
+    "pg-query-stream": "^4.5.1",
     "sqlite3": "5.1"
   }
 }
